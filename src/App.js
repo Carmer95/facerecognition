@@ -23,7 +23,7 @@ class App extends Component {
     const image = document.getElementById('inputimage');
     const width = Number(image.width);
     const height = Number(image.height);
-    console.log(data, width, height, '42');
+    console.log(data, width, height, '41');
   }
 
   onInputChange = (event) => {
