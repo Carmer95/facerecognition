@@ -1,9 +1,10 @@
 import React from 'react';
+import './FaceRecognition.css';
 	
 const FaceRecognition = ({ imageURL }) => {
 	return (
 		<div className='center'>
-            <img alt='' src={imageURL} />
+            <img id="inputimage" alt='' src={imageURL} width="500px" height="auto"/>
         </div>
 	);
 }
