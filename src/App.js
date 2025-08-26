@@ -65,7 +65,6 @@ class App extends Component {
   }
 
   onPictureSubmit = () => {
-    // console.log('click');
     this.setState({ imageURL: this.state.input });
 
     fetch(`${process.env.REACT_APP_API_URL}/imageurl`, {
