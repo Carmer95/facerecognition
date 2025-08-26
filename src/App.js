@@ -9,18 +9,39 @@ import './App.css';
 import Signin from './components/Signin/Signin';
 import Register from './components/Register/Register';
 
+const initialState = {
+  input: '',
+  imageURL: '',
+  box: {},
+  route: 'signin',
+  isSignedIn: false,
+  user: {
+    id: '', 
+    name: '',
+    email: '',
+    entries: 0,
+    joined: ''
+  }
+}
 
 class App extends Component {
   constructor() {	
 		super();
-		this.state = {
-			input: '',
-      imageURL: '',
-      box: {},
-      route: 'signin',
-      isSignedIn: false
-		}
+		this.state = initialState;
 	}
+
+  loadUser = (data) => {
+		this.setState({
+      user: {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        entries: data.entries,
+        joined: data.joined
+      }
+    })
+	}
+
 
   calculateFaceLocation = (data) => {
     const clarifaiFace = 	data.outputs[0].data.regions[0].region_info.bounding_box;
@@ -43,65 +64,91 @@ class App extends Component {
     this.setState({input: event.target.value});
   }
 
-  onButtonSubmit = () => {
-    console.log('click');
+  onPictureSubmit = () => {
+    // console.log('click');
     this.setState({ imageURL: this.state.input });
-  
-    const requestBody = {
-      user_app_id: {
-        user_id: 'carmer95',
-        app_id: 'Face-Recognition-Brain',
-      },
-      inputs: [
-        {
-          data: {
-            image: {
-              url: this.state.input,
-            },
-          },
-        },
-      ],
-    };
-  
-    fetch('http://localhost:5000/api/clarifai', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log(result);
-        // if (result.outputs) {
-        //   const regions = result.outputs[0].data.regions;
-  
-        //   regions.forEach((region) => {
-        //     const boundingBox = region.region_info.bounding_box;
-        //     const topRow = boundingBox.top_row.toFixed(3);
-        //     const leftCol = boundingBox.left_col.toFixed(3);
-        //     const bottomRow = boundingBox.bottom_row.toFixed(3);
-        //     const rightCol = boundingBox.right_col.toFixed(3);
-  
-        //     region.data.concepts.forEach((concept) => {
-        //       const name = concept.name;
-        //       const value = concept.value.toFixed(4);
-  
-        //       console.log(
-        //         `${name}: ${value} BBox: ${topRow}, ${leftCol}, ${bottomRow}, ${rightCol}`
-        //       );
-        //     ;
-        //     });
-        //   });
-        // }
-        this.displayFaceBox(this.calculateFaceLocation(result))
+
+    fetch('http://localhost:3001/imageurl', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          input: this.state.input
+        })
       })
-      .catch((error) => console.log('error', error));
-  };
+      .then(response => response.json())
+      .then(response => {
+        if (!response || !response.outputs || !response.outputs[0]) {
+          console.error('Invalid response from server:', response);
+          return;
+        }
+
+        // Once valid, continue to update entries count
+        fetch('http://localhost:3001/image', {
+          method: 'put',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ id: this.state.user.id })
+        })
+          .then(response => response.json())
+          .then(count => {
+            this.setState(Object.assign(this.state.user, { entries: count }));
+          })
+          .catch(console.log);
+
+        // Finally, display the face bounding box
+        const box = this.calculateFaceLocation(response);
+        this.displayFaceBox(box);
+      })
+      .catch(err => console.log(err));
+  }
+  
+  //   const requestBody = {
+  //     user_app_id: {
+  //       user_id: 'carmer95',
+  //       app_id: 'Face-Recognition-Brain',
+  //     },
+  //     inputs: [
+  //       {
+  //         data: {
+  //           image: {
+  //             url: this.state.input,
+  //           },
+  //         },
+  //       },
+  //     ],
+  //   };
+  
+  //   fetch('http://localhost:5000/api/clarifai', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(requestBody),
+  //   })
+  //     .then((response) => response.json())
+  //     .then((result) => {
+  //       console.log(result);
+  //       if (result.outputs[0].status.description === 'Ok') {
+  //         fetch('http://localhost:3001/image', {
+  //           method: 'put',
+  //           headers: {'Content-Type': 'application/json'},
+  //           body: JSON.stringify({
+  //             id: this.state.user.id
+  //           })
+  //         })
+  //         .then(response => response.json())
+  //         .then(count => {
+  //           this.setState(Object.assign(this.state.user, { entries: count }))
+  //         })
+  //         .catch(console.log())
+  //       }
+  //       this.displayFaceBox(this.calculateFaceLocation(result))
+  //     })
+  //     .catch((error) => console.log('error', error));
+  // };
   
   onRouteChange = (route) => {
     if (route === 'signout') {
-      this.setState({isSignedIn: false})
+      this.setState(initialState)
     } else if (route === 'home') {
       this.setState({isSignedIn: true})
     }
@@ -110,24 +157,47 @@ class App extends Component {
 
     render() {
       const { isSignedIn, imageURL, route, box } = this.state;
+      // console.log(this.state.user)
       return (
         <div className="App">
-          <ParticlesBg color="" num={130} type="cobweb" bg={true} />
-          <Navigation isSignedIn={isSignedIn} onRouteChange={this.onRouteChange} />
+          <ParticlesBg 
+            color="" 
+            num={130} 
+            type="cobweb" 
+            bg={true} 
+          />
+          <Navigation 
+            isSignedIn={isSignedIn} 
+            onRouteChange={this.onRouteChange} 
+          />
           { route === 'home'
           ? <div>
               <Logo />
-              <Rank />
-              <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} />
-              <FaceRecognition box={box} imageURL={imageURL}/>
+              <Rank 
+                name={this.state.user.name} 
+                entries={this.state.user.entries} 
+              />
+              <ImageLinkForm 
+                onInputChange={this.onInputChange} 
+                onPictureSubmit={this.onPictureSubmit} 
+              />
+              <FaceRecognition 
+                box={box} 
+                imageURL={imageURL}
+              />
             </div>
-          : (
-            route === 'signin'
-          ? <Signin onRouteChange={this.onRouteChange} />
-          : <Register onRouteChange={this.onRouteChange}/>
+          :(route === 'signin'
+          ? <Signin 
+            loadUser={this.loadUser} 
+            onRouteChange={this.onRouteChange} 
+          />
+          : <Register 
+            loadUser={this.loadUser} 
+            onRouteChange={this.onRouteChange}
+          />
           )
-          } 
-        </div>
+        } 
+      </div>
     );
   }
 }
