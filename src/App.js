@@ -68,7 +68,7 @@ class App extends Component {
     // console.log('click');
     this.setState({ imageURL: this.state.input });
 
-    fetch('http://localhost:3001/imageurl', {
+    fetch(`${process.env.REACT_APP_API_URL}/imageurl`, {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -83,7 +83,7 @@ class App extends Component {
         }
 
         // Once valid, continue to update entries count
-        fetch('http://localhost:3001/image', {
+        fetch(`${process.env.REACT_APP_API_URL}/image`, {
           method: 'put',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ id: this.state.user.id })
