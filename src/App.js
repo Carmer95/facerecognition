@@ -41,7 +41,6 @@ class App extends Component {
         joined: data.joined
       }
     })
-    console.log('Frontend using API URL:', process.env.REACT_APP_API_URL);
 	}
 
 
@@ -67,7 +66,7 @@ class App extends Component {
   }
 
   onPictureSubmit = () => {
-    // console.log('click');
+    console.log('Frontend using API URL:', process.env.REACT_APP_API_URL);
     this.setState({ imageURL: this.state.input });
 
     fetch(`${backend}/imageurl`, {
