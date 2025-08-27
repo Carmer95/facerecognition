@@ -24,6 +24,7 @@ class Register extends React.Component {
 	}
 
     onSubmitRegister = () => {
+    console.log('Frontend using API URL:', process.env.REACT_APP_API_URL);
         console.log(this.state.name, this.state.email);
         fetch(`${backend}/register`, {
 			method: 'post',
