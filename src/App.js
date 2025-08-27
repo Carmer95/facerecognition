@@ -1,3 +1,4 @@
+require('dotenv').config();
 import React, { Component } from 'react';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Navigation from './components/Navigation/Navigation';
@@ -23,13 +24,13 @@ const initialState = {
     joined: ''
   }
 }
-const backend = process.env.REACT_APP_API_URL
+const backend = process.env.API_URL
 
 class App extends Component {
   constructor() {	
 		super();
 		this.state = initialState;
-    console.log('API URL:', process.env.REACT_APP_API_URL);
+    console.log('API URL:', process.env.API_URL);
 	}
 
   loadUser = (data) => {
