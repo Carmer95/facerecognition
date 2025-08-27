@@ -41,6 +41,7 @@ class App extends Component {
         joined: data.joined
       }
     })
+    console.log('Frontend using API URL:', process.env.REACT_APP_API_URL);
 	}
 
 
