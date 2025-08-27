@@ -29,6 +29,7 @@ class App extends Component {
   constructor() {	
 		super();
 		this.state = initialState;
+    console.log('API URL:', process.env.REACT_APP_API_URL);
 	}
 
   loadUser = (data) => {
@@ -66,7 +67,6 @@ class App extends Component {
   }
 
   onPictureSubmit = () => {
-    console.log('Frontend using API URL:', process.env.REACT_APP_API_URL);
     this.setState({ imageURL: this.state.input });
 
     fetch(`${backend}/imageurl`, {
