@@ -1,5 +1,8 @@
 import React from 'react';
-    
+
+const backend = process.env.REACT_APP_API_URL
+
+
 class Signin extends React.Component {
     constructor(props) {
         super(props);
@@ -18,7 +21,7 @@ class Signin extends React.Component {
 
     onSubmitSignIn = (user) => {
         // console.log(this.state);
-        fetch(`${process.env.REACT_APP_API_URL}/signin`, {
+        fetch(`${backend}/signin`, {
 			method: 'post',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify({

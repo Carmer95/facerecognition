@@ -23,6 +23,7 @@ const initialState = {
     joined: ''
   }
 }
+const backend = process.env.REACT_APP_API_URL
 
 class App extends Component {
   constructor() {	
@@ -68,7 +69,7 @@ class App extends Component {
     // console.log('click');
     this.setState({ imageURL: this.state.input });
 
-    fetch(`${process.env.REACT_APP_API_URL}/imageurl`, {
+    fetch(`${backend}/imageurl`, {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -83,7 +84,7 @@ class App extends Component {
         }
 
         // Once valid, continue to update entries count
-        fetch(`${process.env.REACT_APP_API_URL}/image`, {
+        fetch(`${backend}/image`, {
           method: 'put',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ id: this.state.user.id })

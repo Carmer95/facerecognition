@@ -1,5 +1,8 @@
 import React from 'react';
-    
+
+const backend = process.env.REACT_APP_API_URL
+
+
 class Register extends React.Component {
     constructor(props) {
         super(props);
@@ -22,7 +25,7 @@ class Register extends React.Component {
 
     onSubmitRegister = () => {
         console.log(this.state.name, this.state.email);
-        fetch(`${process.env.REACT_APP_API_URL}/register`, {
+        fetch(`${backend}/register`, {
 			method: 'post',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify({
