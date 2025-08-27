@@ -8,7 +8,6 @@ import ParticlesBg from 'particles-bg';
 import './App.css';
 import Signin from './components/Signin/Signin';
 import Register from './components/Register/Register';
-require('dotenv').config();
 
 const initialState = {
   input: '',
